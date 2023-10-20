@@ -1,4 +1,4 @@
-export interface ReflectionModel {
+export type ReflectionModel = {
     id: string;
     success: string;
     low_point: string;
@@ -7,4 +7,4 @@ export interface ReflectionModel {
     createdAt: string;
     updatedAt: string;
     userId: string;
-}
+};

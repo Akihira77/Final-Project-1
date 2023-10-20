@@ -41,7 +41,9 @@ class UserRepository {
             return null;
         }
 
-        if (!verifyPassword(password, user.password)) {
+        const isMatched = await verifyPassword(password, user.password);
+
+        if (!isMatched) {
             return "Email or Password is not correct";
         }
 

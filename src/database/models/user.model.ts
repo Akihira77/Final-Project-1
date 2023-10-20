@@ -1,27 +1,27 @@
-export interface UserModel {
+export type UserModel = {
     id: string;
     email: string;
     password: string;
-}
+};
 
-export interface UserDTO {
+export type UserDTO = {
     id: string;
     email: string;
-}
+};
 
-export interface RegisterRequestDTO {
+export type RegisterRequestDTO = {
     email: string;
     password: string;
-}
+};
 
-export interface RegisterResponseDTO {
+export type RegisterResponseDTO = {
     id: string;
     email: string;
-}
+};
 
-export interface LoginRequestDTO {
+export type LoginRequestDTO = {
     email: string;
     password: string;
-}
+};
 
 export type LoginResponse = string | { access_token: string } | null;
