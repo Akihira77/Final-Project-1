@@ -18,3 +18,10 @@ export interface RegisterResponseDTO {
     id: string;
     email: string;
 }
+
+export interface LoginRequestDTO {
+    email: string;
+    password: string;
+}
+
+export type LoginResponse = string | { access_token: string } | null;
