@@ -1,27 +1,54 @@
-export type UserModel = {
-    id: string;
-    email: string;
-    password: string;
-};
+import { z } from "zod";
 
-export type UserDTO = {
-    id: string;
-    email: string;
-};
+export const UserModel = z.object({
+    id: z.string(),
+    email: z.string(),
+    password: z.string(),
+});
 
-export type RegisterRequestDTO = {
-    email: string;
-    password: string;
-};
+export type UserModelType = z.infer<typeof UserModel>;
 
-export type RegisterResponseDTO = {
-    id: string;
-    email: string;
-};
+export const UserDTO = z.object({
+    id: z.string(),
+    email: z.string(),
+});
 
-export type LoginRequestDTO = {
-    email: string;
-    password: string;
-};
+export type UserDTOType = z.infer<typeof UserDTO>;
 
-export type LoginResponse = string | { access_token: string } | null;
+export const RegisterRequestDTO = z
+    .object({
+        email: z
+            .string({
+                required_error: "Email is required",
+                invalid_type_error: "Email must be a string",
+            })
+            .email()
+            .trim(),
+        password: z.string({
+            required_error: "Password is required",
+        }),
+    })
+    .required();
+
+export type RegisterRequestDTOType = z.infer<typeof RegisterRequestDTO>;
+
+export const RegisterResponseDTO = z.object({
+    id: z.string(),
+    email: z.string(),
+});
+
+export type RegisterResponseDTOType = z.infer<typeof RegisterResponseDTO>;
+
+export const LoginRequestDTO = z.object({
+    user: UserModel,
+    passwordRequest: z.string(),
+});
+
+export type LoginRequestDTOType = z.infer<typeof LoginRequestDTO>;
+
+export const LoginResponseDTO = z.union([
+    z.string(),
+    z.object({ access_token: z.string() }),
+]);
+
+export type LoginResponseDTOType = z.infer<typeof LoginResponseDTO>;

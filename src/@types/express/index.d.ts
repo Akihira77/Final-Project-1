@@ -5,8 +5,10 @@ type UserType = {
     email: string;
 };
 
-declare module "express" {
-    export interface Request extends Request {
-        user: UserType;
+declare global {
+    namespace Express {
+        export interface Request extends Request {
+            user: UserType;
+        }
     }
 }
