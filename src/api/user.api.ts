@@ -33,13 +33,10 @@ userApi.post(
         const registerResponse = await userService.register(email, password);
 
         if (typeof registerResponse === "string") {
-            res.status(StatusCodes.BadRequest400).send({
-                message: registerResponse,
-            });
-            return;
+            throw new BadRequestError(registerResponse);
         }
 
-        res.status(StatusCodes.Created201).send({ ...registerResponse });
+        res.status(StatusCodes.Created201).send({ user: registerResponse });
         return;
     }
 );
@@ -69,9 +66,46 @@ userApi.post(
 );
 
 userApi.get("/", async (req: Request, res: Response) => {
-    const users = userService.getAll();
+    const users = await userService.getAll();
     res.status(StatusCodes.Ok200).send({ users });
     return;
 });
+
+userApi.get(
+    "/:id",
+    async (
+        req: Request<{ id: string }, never, never, never>,
+        res: Response
+    ) => {
+        const user = await userService.getById(req.params.id);
+        if (!user) {
+            throw new NotFoundError("User does not found");
+        }
+
+        res.status(StatusCodes.Ok200).send({
+            user: {
+                id: user.id,
+                email: user.email,
+            },
+        });
+        return;
+    }
+);
+
+userApi.delete(
+    "/:id",
+    async (
+        req: Request<{ id: string }, never, never, never>,
+        res: Response
+    ) => {
+        const result = await userService.remove(req.params.id);
+
+        if (!result) {
+            throw new NotFoundError("User does not found");
+        }
+        res.status(StatusCodes.Ok200).send({ msg: "User deleted succesfully" });
+        return;
+    }
+);
 
 export default userApi;

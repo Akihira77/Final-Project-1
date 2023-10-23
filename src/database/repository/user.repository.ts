@@ -20,7 +20,7 @@ class UserRepository {
         const hashedPassword = await hashPassword(password);
 
         const { rows: users } = await db.query<RegisterResponseDTOType>(
-            `INSERT INTO "Users" VALUES ($1, $2, $3)`,
+            `INSERT INTO "Users" VALUES ($1, $2, $3) RETURNING "id", "email"`,
             [userId, email, hashedPassword]
         );
 
@@ -33,13 +33,14 @@ class UserRepository {
         user,
         passwordRequest,
     }: LoginRequestDTOType): Promise<LoginResponseDTOType> {
-        const isMatched = await verifyPassword(passwordRequest, user.password);
+        const { id, email, password } = user.UserModel;
+        const isMatched = await verifyPassword(passwordRequest, password);
 
         if (!isMatched) {
             return "Email or password invalid!";
         }
 
-        const token = jwtSign({ userId: user.id, email: user.email });
+        const token = jwtSign({ userId: id, email: email });
 
         return { access_token: token };
     }
@@ -67,6 +68,16 @@ class UserRepository {
         );
 
         return users;
+    }
+
+    async getById(id: string): Promise<UserModelType | undefined> {
+        const { rows: users } = await db.query<UserModelType>(
+            `SELECT "id", "email", "password" FROM "Users" WHERE "id" = $1`,
+            [id]
+        );
+
+        const user = users[0];
+        return user;
     }
 }
 

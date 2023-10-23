@@ -40,8 +40,8 @@ export const RegisterResponseDTO = z.object({
 export type RegisterResponseDTOType = z.infer<typeof RegisterResponseDTO>;
 
 export const LoginRequestDTO = z.object({
-    user: UserModel,
-    passwordRequest: z.string(),
+    user: z.object({ UserModel }, { required_error: "User data is required" }),
+    passwordRequest: z.string({ required_error: "Password is required" }),
 });
 
 export type LoginRequestDTOType = z.infer<typeof LoginRequestDTO>;
