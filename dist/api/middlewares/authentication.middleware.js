@@ -8,8 +8,11 @@ const authentication = async (req, res, next) => {
     }
     try {
         const token = authHeader.split(" ")[1];
+        // console.log('Token:', token);
         const payload = jwt.verify(token, JWT_SECRET);
-        req.user = payload.user;
+        // console.log('Payload:', payload);
+        req.user = payload.userId;
+        // console.log('req.user:', req.user);
         next();
     }
     catch (error) {

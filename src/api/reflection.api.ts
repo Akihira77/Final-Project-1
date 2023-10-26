@@ -14,6 +14,7 @@ import {
 } from "../errors/main.error.js";
 import jwt from 'jsonwebtoken';
 import authentication from "./middlewares/authentication.middleware.js"; 
+import { string } from "zod";
 
 
 const reflectionApi = Router();
@@ -21,42 +22,42 @@ const reflectionService = new ReflectionService();
 
 reflectionApi.post(
     "/reflections",
-    authentication, 
+    authentication,
     async (
         req: Request,
         res: Response
-    ) => {
-
-        const validationResult = isValidData(CreateReflectionRequestDTO, req.body);
-        if (!validationResult.success) {
-            throw new SchemaError(validationResult.error);
-        }
-        const { success, low_point, take_away, UserId } = req.body;
+        ) => {
         
-        try {
-            const createdReflection = await reflectionService.createReflection(
-                {
+            const validationResult = isValidData(CreateReflectionRequestDTO, req.body);
+            if (!validationResult.success) {
+                throw new SchemaError(validationResult.error);
+            }
+            const { success, low_point, take_away } = req.body;
+            const userIdUserType = req.user as unknown
+            const userId = userIdUserType as string
+            // console.log("UserId : ", userId)
+            
+            try {
+                const createdReflection = await reflectionService.createReflection({
                     success,
                     low_point,
                     take_away,
-                    UserId, 
-                },
-            );
-            res.status(201).json(
-                {
-                    success: success,
-                    low_point: low_point,
-                    take_away: take_away,
-                    UserId: UserId,
-                }
-                );
-                
+                    UserId : userId,
+            });
+            
+            res.status(StatusCodes.Created201).send({ 
+                success,
+                low_point,
+                take_away,
+                userId
+             });
         } catch (error) {
             console.error(error);
-            res.status(500).json({ message: "Internal Server Error" });
+            res.status(StatusCodes.InternalServerError500).send({ message: "Gagal membuat refleksi" });
         }
     }
 );
+
 
 
 reflectionApi.get(

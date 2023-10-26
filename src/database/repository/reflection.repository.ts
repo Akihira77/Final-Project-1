@@ -41,7 +41,7 @@ class ReflectionRepository {
 
         return reflections[0];
     }
-
+    
 
     // async updateReflection(id: number, data: Partial<ReflectionModelType>): Promise<ReflectionModelType | undefined> {
     //     const { rows: reflections } = await db.query<ReflectionModelType>(

@@ -38,13 +38,9 @@ export const CreateReflectionRequestDTO = z
             required_error: "Take Away is required",
             invalid_type_error: "Take Away must be a string",
         }),
-        UserId: z.string({
-            required_error: "user id is required",
-            invalid_type_error: "user id must be a string",
-        }),
-
+        UserId: z.string({}).optional(),
     })
-    .required();
+    .nonstrict();
 
 export type CreateReflectionRequestDTOType = z.infer<typeof CreateReflectionRequestDTO>;
 

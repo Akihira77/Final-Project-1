@@ -15,12 +15,5 @@ class ReflectionRepository {
         const { rows: reflections } = await db.query(`SELECT * FROM "Reflections" WHERE "id" = $1`, [id]);
         return reflections[0];
     }
-    async updateReflection(id, data) {
-        const { rows: reflections } = await db.query(`UPDATE "Reflections" SET "success" = $1, "low_point" = $2, "take_away" = $3, "updatedAt" = CURRENT_TIMESTAMP WHERE "id" = $4 RETURNING *`, [data.success, data.low_point, data.take_away, id]);
-        return reflections[0];
-    }
-    async deleteReflection(id) {
-        await db.query(`DELETE FROM "Reflections" WHERE "id" = $1`, [id]);
-    }
 }
 export default ReflectionRepository;

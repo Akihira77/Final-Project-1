@@ -15,10 +15,14 @@ const authentication = async (
 
     try {
         const token = authHeader.split(" ")[1];
+        // console.log('Token:', token);
 
         const payload = <jwt.JwtPayload>jwt.verify(token!, JWT_SECRET);
+        // console.log('Payload:', payload);
 
-        req.user = payload.user;
+        req.user = payload.userId;
+        // console.log('req.user:', req.user);
+
         next();
     } catch (error) {
         throw new UnauthenticatedError("Authentication Failed");
