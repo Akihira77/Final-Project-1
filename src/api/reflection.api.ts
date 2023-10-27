@@ -73,68 +73,79 @@ reflectionApi.get(
     }
 );
 
-reflectionApi.get(
-    "/get/:id",
+reflectionApi.put(
+    "/reflections/:id",
     authentication,
     async (req: Request, res: Response) => {
-        const id = (req.params.id, 10);
+        const { id } = req.params;
+
+        if (!id || isNaN(parseInt(id))) {
+            throw new BadRequestError("Invalid ID parameter");
+        }
+
+        const validationResult = isValidData(CreateReflectionRequestDTO, req.body);
+        if (!validationResult.success) {
+            throw new SchemaError(validationResult.error);
+        }
+
+        const { success, low_point, take_away } = req.body;
+        const userIdUserType = req.user as unknown;
+        const userId = userIdUserType as string;
 
         try {
-            const userId = req.user.userId;
-            const reflection = await reflectionService.getReflectionById(id, userId);
+            const updatedReflection = await reflectionService.updateReflectionById(parseInt(id), {
+                success,
+                low_point,
+                take_away,
+                UserId: userId,
+            });
 
-            if (!reflection) {
-                res.status(404).json({ message: "Reflection not found" });
-                return;
+            if (!updatedReflection) {
+                throw new NotFoundError("Reflection not found");
             }
 
-            res.status(200).json(reflection);
+            res.status(StatusCodes.Ok200).json(updatedReflection);
         } catch (error) {
             console.error(error);
-            res.status(500).json({ message: "Internal Server Error" });
+
+            if (error instanceof NotFoundError) {
+                res.status(StatusCodes.NotFound404).json({ message: error.message });
+            } else {
+                res.status(StatusCodes.InternalServerError500).json({ message: "Failed to update reflection" });
+            }
         }
     }
 );
 
-// reflectionApi.put(
-//     "/update/:id",
-//     authentication,
-//     async (req: Request, res: Response) => {
-//         const id = (req.params.id, 10);
+reflectionApi.delete(
+    "/reflections/:id",
+    authentication,
+    async (req: Request, res: Response) => {
+        const { id } = req.params;
 
-//         try {
-//             const userId = req.user.userId;
-//             const data = req.body;
-//             const updatedReflection = await reflectionService.updateReflection(id, data, userId);
+        if (!id || isNaN(parseInt(id))) {
+            throw new BadRequestError("Invalid ID parameter");
+        }
 
-//             if (!updatedReflection) {
-//                 res.status(404).json({ message: "Reflection not found" });
-//                 return;
-//             }
+        try {
+            const success = await reflectionService.deleteReflectionById(parseInt(id));
 
-//             res.status(200).json(updatedReflection);
-//         } catch (error) {
-//             console.error(error);
-//             res.status(500).json({ message: "Internal Server Error" });
-//         }
-//     }
-// );
+            if (!success) {
+                throw new NotFoundError("Reflection not found");
+            }
 
-// reflectionApi.delete(
-//     "/delete/:id",
-//     authentication,
-//     async (req: Request, res: Response) => {
-//         const id = (req.params.id, 10);
+            res.status(StatusCodes.Ok200).json({msg: "Berhasil Di Hapus"});
 
-//         try {
-//             const userId = req.user.userId;
-//             await reflectionService.deleteReflection(id, userId);
-//             res.status(204).end();
-//         } catch (error) {
-//             console.error(error);
-//             res.status(500).json({ message: "Internal Server Error" });
-//         }
-//     }
-// );
+        } catch (error) {
+            console.error(error);
+
+            if (error instanceof NotFoundError) {
+                res.status(StatusCodes.NotFound404).json({ message: error.message });
+            } else {
+                res.status(StatusCodes.InternalServerError500).json({ message: "Failed to delete reflection" });
+            }
+        }
+    }
+);
 
 export default reflectionApi;

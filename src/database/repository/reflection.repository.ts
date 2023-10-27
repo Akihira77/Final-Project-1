@@ -35,26 +35,40 @@ class ReflectionRepository {
 
     async getReflectionById(id: number): Promise<ReflectionModelType | undefined> {
         const { rows: reflections } = await db.query<ReflectionModelType>(
-            `SELECT * FROM "Reflections" WHERE "id" = $1`,
+            `SELECT * FROM "Reflections" WHERE "id" = $1 ORDER BY ID`,
             [id]
         );
 
         return reflections[0];
     }
+
+    async updateReflectionById(id: number, {
+        success,
+        low_point,
+        take_away,
+    }: CreateReflectionRequestDTOType): Promise<CreateReflectionResponseDTOType | undefined> {
+        const { rows: reflections } = await db.query<CreateReflectionResponseDTOType>(
+            `UPDATE "Reflections" 
+             SET success = $2,
+                 low_point = $3,
+                 take_away = $4
+             WHERE "id" = $1
+             RETURNING *
+            `,
+            [id, success, low_point, take_away]
+        );
+
+        return reflections[0];
+    }
     
+    async deleteReflectionById(id: number): Promise<boolean> {
+        const { rowCount } = await db.query(
+            `DELETE FROM "Reflections" WHERE "id" = $1`,
+            [id]
+        );
 
-    // async updateReflection(id: number, data: Partial<ReflectionModelType>): Promise<ReflectionModelType | undefined> {
-    //     const { rows: reflections } = await db.query<ReflectionModelType>(
-    //         `UPDATE "Reflections" SET "success" = $1, "low_point" = $2, "take_away" = $3, "updatedAt" = CURRENT_TIMESTAMP WHERE "id" = $4 RETURNING *`,
-    //         [data.success, data.low_point, data.take_away, id]
-    //     );
-
-    //     return reflections[0];
-    // }
-
-    // async deleteReflection(id: number): Promise<void> {
-    //     await db.query(`DELETE FROM "Reflections" WHERE "id" = $1`, [id]);
-    // }
+        return rowCount > 0;
+    }
 
 }
 

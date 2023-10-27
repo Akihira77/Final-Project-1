@@ -46,62 +46,26 @@ class ReflectionService {
         }
     }
 
-    async getReflectionById(id: number, userId: string): Promise<ReflectionModelType | undefined> {
+    async updateReflectionById(id: number, reflectionData: CreateReflectionRequestDTOType): Promise<CreateReflectionResponseDTOType | undefined> {
         try {
-            const reflection = await this._reflectionRepository.getReflectionById(id);
-
-            if (!reflection) {
-                return undefined;
-            }
-
-            if (reflection.UserId !== userId) {
-                throw new Error("Unauthorized");
-            }
-
-            return reflection;
+            const updatedReflection = await this._reflectionRepository.updateReflectionById(id, reflectionData);
+            return updatedReflection;
         } catch (error) {
             console.log(error);
             throw error;
         }
     }
 
+    async deleteReflectionById(id: number): Promise<boolean> {
+        try {
+            const isDeleted = await this._reflectionRepository.deleteReflectionById(id);
+            return isDeleted;
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
+    }
 
-
-    // async updateReflection(id: number, data: Partial<ReflectionModelType>, userId: string): Promise<ReflectionModelType | undefined> {
-    //     try {
-    //         const reflection = await this._reflectionRepository.getReflectionById(id);
-
-    //         if (!reflection) {
-    //             return undefined;
-    //         }
-
-    //         // Pastikan reflection.UserId sama dengan userId dari token otentikasi
-    //         if (reflection.UserId !== userId) {
-    //             throw new Error("Unauthorized");
-    //         }
-
-    //         const updatedReflection = await this._reflectionRepository.updateReflection(id, data);
-    //         return updatedReflection;
-    //     } catch (error) {
-    //         console.log(error);
-    //         throw error;
-    //     }
-    // }
-
-    // async deleteReflection(id: number, userId: string): Promise<void> {
-    //     const reflection = await this._reflectionRepository.getReflectionById(id);
-
-    //     if (!reflection) {
-    //         throw new Error("Reflection not found");
-    //     }
-
-    //     // Pastikan reflection.UserId sama dengan userId dari token otentikasi
-    //     if (reflection.UserId !== userId) {
-    //         throw new Error("Unauthorized");
-    //     }
-
-    //     await this._reflectionRepository.deleteReflection(id);
-    // }
 
 }
 

@@ -12,8 +12,22 @@ class ReflectionRepository {
         return reflections;
     }
     async getReflectionById(id) {
-        const { rows: reflections } = await db.query(`SELECT * FROM "Reflections" WHERE "id" = $1`, [id]);
+        const { rows: reflections } = await db.query(`SELECT * FROM "Reflections" WHERE "id" = $1 ORDER BY ID`, [id]);
         return reflections[0];
+    }
+    async updateReflectionById(id, { success, low_point, take_away, }) {
+        const { rows: reflections } = await db.query(`UPDATE "Reflections" 
+             SET success = $2,
+                 low_point = $3,
+                 take_away = $4
+             WHERE "id" = $1
+             RETURNING *
+            `, [id, success, low_point, take_away]);
+        return reflections[0];
+    }
+    async deleteReflectionById(id) {
+        const { rowCount } = await db.query(`DELETE FROM "Reflections" WHERE "id" = $1`, [id]);
+        return rowCount > 0;
     }
 }
 export default ReflectionRepository;

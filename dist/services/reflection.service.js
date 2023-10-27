@@ -29,16 +29,20 @@ class ReflectionService {
             throw error;
         }
     }
-    async getReflectionById(id, userId) {
+    async updateReflectionById(id, reflectionData) {
         try {
-            const reflection = await this._reflectionRepository.getReflectionById(id);
-            if (!reflection) {
-                return undefined;
-            }
-            if (reflection.UserId !== userId) {
-                throw new Error("Unauthorized");
-            }
-            return reflection;
+            const updatedReflection = await this._reflectionRepository.updateReflectionById(id, reflectionData);
+            return updatedReflection;
+        }
+        catch (error) {
+            console.log(error);
+            throw error;
+        }
+    }
+    async deleteReflectionById(id) {
+        try {
+            const isDeleted = await this._reflectionRepository.deleteReflectionById(id);
+            return isDeleted;
         }
         catch (error) {
             console.log(error);
