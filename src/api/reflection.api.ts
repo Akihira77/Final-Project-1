@@ -62,16 +62,27 @@ reflectionApi.post(
 
 reflectionApi.get(
     "/getAllreflections",
+    authentication,
     async (req: Request, res: Response) => {
         try {
-            const reflections = await reflectionService.getAllReflections();
-            res.status(200).json(reflections);
+            const userIdUserType = req.user as unknown;
+            const userId = userIdUserType as string;
+
+            const reflections = await reflectionService.getAllReflections(userId);
+
+            if (typeof reflections === 'string') {
+                res.status(200).json({ message: reflections });
+            } else {
+                res.status(200).json(reflections);
+            }
         } catch (error) {
             console.error(error);
             res.status(500).json({ message: "Internal Server Error" });
         }
     }
 );
+
+
 
 reflectionApi.put(
     "/reflections/:id",
@@ -93,6 +104,12 @@ reflectionApi.put(
         const userId = userIdUserType as string;
 
         try {
+            const reflection = await reflectionService.getReflectionById(parseInt(id), userId);
+
+            if (!reflection) {
+                throw new NotFoundError("Reflection not found or Unauthorization");
+            }
+
             const updatedReflection = await reflectionService.updateReflectionById(parseInt(id), {
                 success,
                 low_point,
@@ -101,7 +118,7 @@ reflectionApi.put(
             });
 
             if (!updatedReflection) {
-                throw new NotFoundError("Reflection not found");
+                throw new NotFoundError("Reflection not Unauthorized");
             }
 
             res.status(StatusCodes.Ok200).json(updatedReflection);
@@ -110,12 +127,16 @@ reflectionApi.put(
 
             if (error instanceof NotFoundError) {
                 res.status(StatusCodes.NotFound404).json({ message: error.message });
+            } else if (error instanceof UnauthenticatedError) {
+                res.status(StatusCodes.Unauthorized401).json({ message: error.message });
             } else {
                 res.status(StatusCodes.InternalServerError500).json({ message: "Failed to update reflection" });
             }
         }
     }
 );
+
+
 
 reflectionApi.delete(
     "/reflections/:id",
@@ -127,25 +148,31 @@ reflectionApi.delete(
             throw new BadRequestError("Invalid ID parameter");
         }
 
+        const userIdUserType = req.user as unknown;
+        const userId = userIdUserType as string;
+
         try {
-            const success = await reflectionService.deleteReflectionById(parseInt(id));
+            const success = await reflectionService.deleteReflectionById(parseInt(id), userId);
 
             if (!success) {
                 throw new NotFoundError("Reflection not found");
             }
 
-            res.status(StatusCodes.Ok200).json({msg: "Berhasil Di Hapus"});
+            res.status(StatusCodes.Ok200).json({ msg: "Berhasil Di Hapus" });
 
         } catch (error) {
             console.error(error);
 
             if (error instanceof NotFoundError) {
                 res.status(StatusCodes.NotFound404).json({ message: error.message });
+            } else if (error instanceof UnauthenticatedError) {
+                res.status(StatusCodes.Unauthorized401).json({ message: error.message });
             } else {
                 res.status(StatusCodes.InternalServerError500).json({ message: "Failed to delete reflection" });
             }
         }
     }
 );
+
 
 export default reflectionApi;

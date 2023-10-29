@@ -25,22 +25,23 @@ class ReflectionRepository {
         return reflection;
     }
 
-    async getAllReflections(): Promise<ReflectionModelType[]> {
+    async getAllReflections(userId: string): Promise<ReflectionModelType[]> {
         const { rows: reflections } = await db.query<ReflectionModelType>(
-            `SELECT * FROM "Reflections"`
+            `SELECT * FROM "Reflections" WHERE "userid" = $1`,
+            [userId]
         );
-
+    
         return reflections;
     }
 
-    async getReflectionById(id: number): Promise<ReflectionModelType | undefined> {
-        const { rows: reflections } = await db.query<ReflectionModelType>(
-            `SELECT * FROM "Reflections" WHERE "id" = $1 ORDER BY ID`,
-            [id]
-        );
+    async getReflectionById(id: number, userId: string): Promise<ReflectionModelType | undefined> {
+    const { rows: reflections } = await db.query<ReflectionModelType>(
+        `SELECT * FROM "Reflections" WHERE "id" = $1 AND "userid" = $2 ORDER BY ID`,
+        [id, userId]
+    );
 
-        return reflections[0];
-    }
+    return reflections[0];
+}
 
     async updateReflectionById(id: number, {
         success,

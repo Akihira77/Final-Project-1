@@ -4,6 +4,10 @@ import {
     ReflectionModelType,
 } from "../database/models/reflection.model";
 import ReflectionRepository from "../database/repository/reflection.repository.js";
+import {
+    NotFoundError,
+    UnauthenticatedError
+} from "../errors/main.error.js";
 
 class ReflectionService {
     private readonly _reflectionRepository;
@@ -36,15 +40,31 @@ class ReflectionService {
             }
     }
 
-    async getAllReflections(): Promise<ReflectionModelType[]> {
+    async getAllReflections(userId: string): Promise<ReflectionModelType[] | string> {
         try {
-            const reflections = await this._reflectionRepository.getAllReflections();
+            const reflections = await this._reflectionRepository.getAllReflections(userId);
+    
+            if (reflections.length === 0) {
+                return "Empty Data";
+            }
+    
             return reflections;
         } catch (error) {
             console.log(error);
             throw error;
         }
     }
+
+    async getReflectionById(id: number, userId: string): Promise<ReflectionModelType | undefined> {
+        try {
+            const reflection = await this._reflectionRepository.getReflectionById(id, userId);
+            return reflection;
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
+    }
+    
 
     async updateReflectionById(id: number, reflectionData: CreateReflectionRequestDTOType): Promise<CreateReflectionResponseDTOType | undefined> {
         try {
@@ -56,15 +76,23 @@ class ReflectionService {
         }
     }
 
-    async deleteReflectionById(id: number): Promise<boolean> {
+    async deleteReflectionById(id: number, userId: string): Promise<boolean> {
         try {
-            const isDeleted = await this._reflectionRepository.deleteReflectionById(id);
-            return isDeleted;
+            const reflection = await this._reflectionRepository.getReflectionById(id, userId);
+    
+            if (!reflection) {
+                throw new NotFoundError("Reflection not found Or Unauthorized");
+            }
+    
+            const success = await this._reflectionRepository.deleteReflectionById(id);
+    
+            return success;
         } catch (error) {
             console.log(error);
             throw error;
         }
     }
+    
 
 
 }

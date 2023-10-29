@@ -1,4 +1,5 @@
 import ReflectionRepository from "../database/repository/reflection.repository.js";
+import { NotFoundError } from "../errors/main.error.js";
 class ReflectionService {
     _reflectionRepository;
     constructor() {
@@ -19,10 +20,23 @@ class ReflectionService {
             throw error;
         }
     }
-    async getAllReflections() {
+    async getAllReflections(userId) {
         try {
-            const reflections = await this._reflectionRepository.getAllReflections();
+            const reflections = await this._reflectionRepository.getAllReflections(userId);
+            if (reflections.length === 0) {
+                return "Empty Data";
+            }
             return reflections;
+        }
+        catch (error) {
+            console.log(error);
+            throw error;
+        }
+    }
+    async getReflectionById(id, userId) {
+        try {
+            const reflection = await this._reflectionRepository.getReflectionById(id, userId);
+            return reflection;
         }
         catch (error) {
             console.log(error);
@@ -39,10 +53,14 @@ class ReflectionService {
             throw error;
         }
     }
-    async deleteReflectionById(id) {
+    async deleteReflectionById(id, userId) {
         try {
-            const isDeleted = await this._reflectionRepository.deleteReflectionById(id);
-            return isDeleted;
+            const reflection = await this._reflectionRepository.getReflectionById(id, userId);
+            if (!reflection) {
+                throw new NotFoundError("Reflection not found Or Unauthorized");
+            }
+            const success = await this._reflectionRepository.deleteReflectionById(id);
+            return success;
         }
         catch (error) {
             console.log(error);

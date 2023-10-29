@@ -7,12 +7,12 @@ class ReflectionRepository {
         const reflection = reflections[0];
         return reflection;
     }
-    async getAllReflections() {
-        const { rows: reflections } = await db.query(`SELECT * FROM "Reflections"`);
+    async getAllReflections(userId) {
+        const { rows: reflections } = await db.query(`SELECT * FROM "Reflections" WHERE "userid" = $1`, [userId]);
         return reflections;
     }
-    async getReflectionById(id) {
-        const { rows: reflections } = await db.query(`SELECT * FROM "Reflections" WHERE "id" = $1 ORDER BY ID`, [id]);
+    async getReflectionById(id, userId) {
+        const { rows: reflections } = await db.query(`SELECT * FROM "Reflections" WHERE "id" = $1 AND "userid" = $2 ORDER BY ID`, [id, userId]);
         return reflections[0];
     }
     async updateReflectionById(id, { success, low_point, take_away, }) {
