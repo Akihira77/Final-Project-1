@@ -26,7 +26,7 @@ export async function migration() {
         success TEXT,
         low_point TEXT,
         take_away TEXT,
-        userid TEXT,
+        userid UUID,
         createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )`;
