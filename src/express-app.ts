@@ -15,9 +15,8 @@ export const startServer = () => {
     app.use(express.urlencoded({ extended: false }));
 
     //! Routes
-    app.use(authentication);
     app.use("/api/v1/user", userApi);
-    app.use("/api/v1/reflection", reflectionApi);
+    app.use("/api/v1/reflection", authentication, reflectionApi);
 
     //! Error Handler
     app.use(errorHandlerMiddleware);
