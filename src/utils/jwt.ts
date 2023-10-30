@@ -1,8 +1,13 @@
 import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "../config/env.config.js";
 
-export function jwtSign(
-    payload: Record<string, string | number | boolean>
-): string {
-    return jwt.sign(payload, JWT_SECRET!);
+export type AuthPayloadType = {
+	user: {
+		userId: string;
+		email: string;
+	};
+};
+
+export function jwtSign(payload: AuthPayloadType): string {
+	return jwt.sign({ user: payload }, JWT_SECRET!);
 }

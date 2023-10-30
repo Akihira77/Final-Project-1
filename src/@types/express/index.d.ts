@@ -1,14 +1,14 @@
 import { Request } from "express";
 
 type UserType = {
-    userId: string;
-    email: string;
+	userId: string;
+	email: string;
 };
 
 declare global {
-    namespace Express {
-        export interface Request extends Request {
-            user: UserType;
-        }
-    }
+	namespace Express {
+		export interface Request extends Request {
+			user: UserType;
+		}
+	}
 }

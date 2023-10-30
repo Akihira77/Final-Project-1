@@ -12,8 +12,7 @@ reflectionApi.post("/reflections", async (req, res) => {
         throw new SchemaError(validationResult.error);
     }
     const { success, low_point, take_away } = req.body;
-    const userIdUserType = req.user;
-    const userId = userIdUserType;
+    const userId = req.user.userId;
     // console.log("UserId : ", userId)
     try {
         const createdReflection = await reflectionService.createReflection({
@@ -26,20 +25,21 @@ reflectionApi.post("/reflections", async (req, res) => {
             success,
             low_point,
             take_away,
-            userId
+            userId,
         });
     }
     catch (error) {
         console.error(error);
-        res.status(StatusCodes.InternalServerError500).send({ message: "Gagal membuat refleksi" });
+        res.status(StatusCodes.InternalServerError500).send({
+            message: "Gagal membuat refleksi",
+        });
     }
 });
 reflectionApi.get("/getAllreflections", async (req, res) => {
     try {
-        const userIdUserType = req.user;
-        const userId = userIdUserType;
+        const userId = req.user.userId;
         const reflections = await reflectionService.getAllReflections(userId);
-        if (typeof reflections === 'string') {
+        if (typeof reflections === "string") {
             res.status(200).json({ message: reflections });
         }
         else {
@@ -61,8 +61,7 @@ reflectionApi.put("/reflections/:id", async (req, res) => {
         throw new SchemaError(validationResult.error);
     }
     const { success, low_point, take_away } = req.body;
-    const userIdUserType = req.user;
-    const userId = userIdUserType;
+    const userId = req.user.userId;
     try {
         const reflection = await reflectionService.getReflectionById(parseInt(id), userId);
         if (!reflection) {
@@ -82,13 +81,19 @@ reflectionApi.put("/reflections/:id", async (req, res) => {
     catch (error) {
         console.error(error);
         if (error instanceof NotFoundError) {
-            res.status(StatusCodes.NotFound404).json({ message: error.message });
+            res.status(StatusCodes.NotFound404).json({
+                message: error.message,
+            });
         }
         else if (error instanceof UnauthenticatedError) {
-            res.status(StatusCodes.Unauthorized401).json({ message: error.message });
+            res.status(StatusCodes.Unauthorized401).json({
+                message: error.message,
+            });
         }
         else {
-            res.status(StatusCodes.InternalServerError500).json({ message: "Failed to update reflection" });
+            res.status(StatusCodes.InternalServerError500).json({
+                message: "Failed to update reflection",
+            });
         }
     }
 });
@@ -97,8 +102,7 @@ reflectionApi.delete("/reflections/:id", async (req, res) => {
     if (!id || isNaN(parseInt(id))) {
         throw new BadRequestError("Invalid ID parameter");
     }
-    const userIdUserType = req.user;
-    const userId = userIdUserType;
+    const userId = req.user.userId;
     try {
         const success = await reflectionService.deleteReflectionById(parseInt(id), userId);
         if (!success) {
@@ -109,13 +113,19 @@ reflectionApi.delete("/reflections/:id", async (req, res) => {
     catch (error) {
         console.error(error);
         if (error instanceof NotFoundError) {
-            res.status(StatusCodes.NotFound404).json({ message: error.message });
+            res.status(StatusCodes.NotFound404).json({
+                message: error.message,
+            });
         }
         else if (error instanceof UnauthenticatedError) {
-            res.status(StatusCodes.Unauthorized401).json({ message: error.message });
+            res.status(StatusCodes.Unauthorized401).json({
+                message: error.message,
+            });
         }
         else {
-            res.status(StatusCodes.InternalServerError500).json({ message: "Failed to delete reflection" });
+            res.status(StatusCodes.InternalServerError500).json({
+                message: "Failed to delete reflection",
+            });
         }
     }
 });

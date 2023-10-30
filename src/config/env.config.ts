@@ -1,9 +1,9 @@
 import dotenv from "dotenv";
 
 if (process.env.NODE_ENV !== "prod") {
-    dotenv.config({ path: `./.env.${process.env.NODE_ENV}` });
+	dotenv.config({ path: `./.env` });
 } else {
-    dotenv.config();
+	dotenv.config();
 }
 
 const JWT_SECRET = process.env.JWT_SECRET;
