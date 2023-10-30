@@ -5,22 +5,17 @@ import errorHandlerMiddleware from "./api/middlewares/error-handler.middleware.j
 import userApi from "./api/user.api.js";
 import reflectionApi from "./api/reflection.api.js";
 import authentication from "./api/middlewares/authentication.middleware.js";
-
 export const startServer = () => {
     const app = express();
-
     //! Middlewares
     app.use(morgan("dev"));
     app.use(express.json());
     app.use(express.urlencoded({ extended: false }));
-
     //! Routes
     app.use(authentication);
     app.use("/api/v1/user", userApi);
     app.use("/api/v1/reflection", reflectionApi);
-
     //! Error Handler
     app.use(errorHandlerMiddleware);
-
     return app;
 };
