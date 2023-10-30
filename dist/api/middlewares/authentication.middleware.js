@@ -12,7 +12,7 @@ const authentication = async (req, res, next) => {
         const payload = jwt.verify(token, JWT_SECRET);
         // console.log('Payload:', payload);
         req.user = payload.user;
-        console.log('req.user:', req.user);
+        // console.log('req.user:', req.user);
         next();
     }
     catch (error) {
