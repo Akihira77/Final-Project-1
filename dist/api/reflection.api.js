@@ -4,10 +4,9 @@ import { CreateReflectionRequestDTO, } from "../database/models/reflection.model
 import { StatusCodes } from "../utils/constant.js";
 import { isValidData } from "../utils/validateZodSchema.js";
 import { BadRequestError, NotFoundError, SchemaError, UnauthenticatedError, } from "../errors/main.error.js";
-import authentication from "./middlewares/authentication.middleware.js";
 const reflectionApi = Router();
 const reflectionService = new ReflectionService();
-reflectionApi.post("/reflections", authentication, async (req, res) => {
+reflectionApi.post("/reflections", async (req, res) => {
     const validationResult = isValidData(CreateReflectionRequestDTO, req.body);
     if (!validationResult.success) {
         throw new SchemaError(validationResult.error);
@@ -24,7 +23,10 @@ reflectionApi.post("/reflections", authentication, async (req, res) => {
             UserId: userId,
         });
         res.status(StatusCodes.Created201).send({
-            createdReflection
+            success,
+            low_point,
+            take_away,
+            userId
         });
     }
     catch (error) {
@@ -32,7 +34,7 @@ reflectionApi.post("/reflections", authentication, async (req, res) => {
         res.status(StatusCodes.InternalServerError500).send({ message: "Gagal membuat refleksi" });
     }
 });
-reflectionApi.get("/getAllreflections", authentication, async (req, res) => {
+reflectionApi.get("/getAllreflections", async (req, res) => {
     try {
         const userIdUserType = req.user;
         const userId = userIdUserType;
@@ -49,7 +51,7 @@ reflectionApi.get("/getAllreflections", authentication, async (req, res) => {
         res.status(500).json({ message: "Internal Server Error" });
     }
 });
-reflectionApi.put("/reflections/:id", authentication, async (req, res) => {
+reflectionApi.put("/reflections/:id", async (req, res) => {
     const { id } = req.params;
     if (!id || isNaN(parseInt(id))) {
         throw new BadRequestError("Invalid ID parameter");
@@ -90,7 +92,7 @@ reflectionApi.put("/reflections/:id", authentication, async (req, res) => {
         }
     }
 });
-reflectionApi.delete("/reflections/:id", authentication, async (req, res) => {
+reflectionApi.delete("/reflections/:id", async (req, res) => {
     const { id } = req.params;
     if (!id || isNaN(parseInt(id))) {
         throw new BadRequestError("Invalid ID parameter");

@@ -22,7 +22,6 @@ const reflectionService = new ReflectionService();
 
 reflectionApi.post(
     "/reflections",
-    authentication,
     async (
         req: Request,
         res: Response
@@ -62,7 +61,6 @@ reflectionApi.post(
 
 reflectionApi.get(
     "/getAllreflections",
-    authentication,
     async (req: Request, res: Response) => {
         try {
             const userIdUserType = req.user as unknown;
@@ -86,7 +84,6 @@ reflectionApi.get(
 
 reflectionApi.put(
     "/reflections/:id",
-    authentication,
     async (req: Request, res: Response) => {
         const { id } = req.params;
 
@@ -140,7 +137,6 @@ reflectionApi.put(
 
 reflectionApi.delete(
     "/reflections/:id",
-    authentication,
     async (req: Request, res: Response) => {
         const { id } = req.params;
 

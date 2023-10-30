@@ -4,6 +4,7 @@ import morgan from "morgan";
 import errorHandlerMiddleware from "./api/middlewares/error-handler.middleware.js";
 import userApi from "./api/user.api.js";
 import reflectionApi from "./api/reflection.api.js";
+import authentication from "./api/middlewares/authentication.middleware.js";
 
 export const startServer = () => {
     const app = express();
@@ -14,6 +15,7 @@ export const startServer = () => {
     app.use(express.urlencoded({ extended: false }));
 
     //! Routes
+    app.use(authentication);
     app.use("/api/v1/user", userApi);
     app.use("/api/v1/reflection", reflectionApi);
 
