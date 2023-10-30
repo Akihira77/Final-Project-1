@@ -1,5 +1,4 @@
-import { StatusCodes } from "../../utils/constant.js";
-import { BadRequestError, UnauthenticatedError, SchemaError, } from "../../errors/main.error.js";
+import { BadRequestError, UnauthenticatedError, SchemaError, InternalServerError, } from "../../errors/main.error.js";
 const errorHandlerMiddleware = (err, req, res, next) => {
     if (err instanceof BadRequestError) {
         res.status(err.statusCode).send({ msg: err.message });
@@ -10,8 +9,8 @@ const errorHandlerMiddleware = (err, req, res, next) => {
     else if (err instanceof SchemaError) {
         res.status(err.statusCode).send({ name: err.name, errors: err.errors });
     }
-    else {
-        res.status(StatusCodes.InternalServerError500).send({ err });
+    else if (err instanceof InternalServerError) {
+        res.status(err.statusCode).send({ msg: err.message });
     }
     return;
 };
