@@ -3,7 +3,7 @@ import ReflectionService from "../services/reflection.service.js";
 import { CreateReflectionRequestDTO, } from "../database/models/reflection.model.js";
 import { StatusCodes } from "../utils/constant.js";
 import { isValidData } from "../utils/validateZodSchema.js";
-import { BadRequestError, NotFoundError, SchemaError, UnauthenticatedError, } from "../errors/main.error.js";
+import { BadRequestError, NotFoundError, SchemaError, } from "../errors/main.error.js";
 const reflectionApi = Router();
 const reflectionService = new ReflectionService();
 reflectionApi.post("/reflections", async (req, res) => {
@@ -12,9 +12,9 @@ reflectionApi.post("/reflections", async (req, res) => {
         throw new SchemaError(validationResult.error);
     }
     const { success, low_point, take_away } = req.body;
-    const userIdUserType = req.user;
-    const userId = userIdUserType;
-    // console.log("UserId : ", userId)
+    // const userIdUserType = req.user as unknown
+    const userId = "2fc32d6d-efca-4a81-8771-436177548d88";
+    console.log("UserId : ", userId);
     try {
         const createdReflection = await reflectionService.createReflection({
             success,
@@ -31,7 +31,7 @@ reflectionApi.post("/reflections", async (req, res) => {
     }
     catch (error) {
         console.error(error);
-        res.status(StatusCodes.InternalServerError500).send({ message: "Gagal membuat refleksi" });
+        throw error;
     }
 });
 reflectionApi.get("/getAllreflections", async (req, res) => {
@@ -48,7 +48,7 @@ reflectionApi.get("/getAllreflections", async (req, res) => {
     }
     catch (error) {
         console.error(error);
-        res.status(500).json({ message: "Internal Server Error" });
+        throw error;
     }
 });
 reflectionApi.put("/reflections/:id", async (req, res) => {
@@ -81,15 +81,7 @@ reflectionApi.put("/reflections/:id", async (req, res) => {
     }
     catch (error) {
         console.error(error);
-        if (error instanceof NotFoundError) {
-            res.status(StatusCodes.NotFound404).json({ message: error.message });
-        }
-        else if (error instanceof UnauthenticatedError) {
-            res.status(StatusCodes.Unauthorized401).json({ message: error.message });
-        }
-        else {
-            res.status(StatusCodes.InternalServerError500).json({ message: "Failed to update reflection" });
-        }
+        throw error;
     }
 });
 reflectionApi.delete("/reflections/:id", async (req, res) => {
@@ -108,15 +100,7 @@ reflectionApi.delete("/reflections/:id", async (req, res) => {
     }
     catch (error) {
         console.error(error);
-        if (error instanceof NotFoundError) {
-            res.status(StatusCodes.NotFound404).json({ message: error.message });
-        }
-        else if (error instanceof UnauthenticatedError) {
-            res.status(StatusCodes.Unauthorized401).json({ message: error.message });
-        }
-        else {
-            res.status(StatusCodes.InternalServerError500).json({ message: "Failed to delete reflection" });
-        }
+        throw error;
     }
 });
 export default reflectionApi;

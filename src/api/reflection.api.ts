@@ -52,7 +52,7 @@ reflectionApi.post(
              });
         } catch (error) {
             console.error(error);
-            res.status(StatusCodes.InternalServerError500).send({ message: "Gagal membuat refleksi" });
+            throw error;
         }
     }
 );
@@ -75,7 +75,7 @@ reflectionApi.get(
             }
         } catch (error) {
             console.error(error);
-            res.status(500).json({ message: "Internal Server Error" });
+            throw error;
         }
     }
 );
@@ -121,14 +121,7 @@ reflectionApi.put(
             res.status(StatusCodes.Ok200).json(updatedReflection);
         } catch (error) {
             console.error(error);
-
-            if (error instanceof NotFoundError) {
-                res.status(StatusCodes.NotFound404).json({ message: error.message });
-            } else if (error instanceof UnauthenticatedError) {
-                res.status(StatusCodes.Unauthorized401).json({ message: error.message });
-            } else {
-                res.status(StatusCodes.InternalServerError500).json({ message: "Failed to update reflection" });
-            }
+            throw error;
         }
     }
 );
@@ -158,14 +151,7 @@ reflectionApi.delete(
 
         } catch (error) {
             console.error(error);
-
-            if (error instanceof NotFoundError) {
-                res.status(StatusCodes.NotFound404).json({ message: error.message });
-            } else if (error instanceof UnauthenticatedError) {
-                res.status(StatusCodes.Unauthorized401).json({ message: error.message });
-            } else {
-                res.status(StatusCodes.InternalServerError500).json({ message: "Failed to delete reflection" });
-            }
+            throw error;
         }
     }
 );
