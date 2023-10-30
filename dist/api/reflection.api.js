@@ -12,9 +12,7 @@ reflectionApi.post("/reflections", async (req, res) => {
         throw new SchemaError(validationResult.error);
     }
     const { success, low_point, take_away } = req.body;
-    // const userIdUserType = req.user as unknown
-    const userId = "2fc32d6d-efca-4a81-8771-436177548d88";
-    console.log("UserId : ", userId);
+    const userId = req.user.userId;
     try {
         const createdReflection = await reflectionService.createReflection({
             success,
@@ -36,8 +34,7 @@ reflectionApi.post("/reflections", async (req, res) => {
 });
 reflectionApi.get("/getAllreflections", async (req, res) => {
     try {
-        const userIdUserType = req.user;
-        const userId = userIdUserType;
+        const userId = req.user.userId;
         const reflections = await reflectionService.getAllReflections(userId);
         if (typeof reflections === 'string') {
             res.status(200).json({ message: reflections });
@@ -61,8 +58,7 @@ reflectionApi.put("/reflections/:id", async (req, res) => {
         throw new SchemaError(validationResult.error);
     }
     const { success, low_point, take_away } = req.body;
-    const userIdUserType = req.user;
-    const userId = userIdUserType;
+    const userId = req.user.userId;
     try {
         const reflection = await reflectionService.getReflectionById(parseInt(id), userId);
         if (!reflection) {
@@ -89,8 +85,7 @@ reflectionApi.delete("/reflections/:id", async (req, res) => {
     if (!id || isNaN(parseInt(id))) {
         throw new BadRequestError("Invalid ID parameter");
     }
-    const userIdUserType = req.user;
-    const userId = userIdUserType;
+    const userId = req.user.userId;
     try {
         const success = await reflectionService.deleteReflectionById(parseInt(id), userId);
         if (!success) {

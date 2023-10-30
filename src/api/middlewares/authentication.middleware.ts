@@ -20,7 +20,7 @@ const authentication = async (
         const payload = <jwt.JwtPayload>jwt.verify(token!, JWT_SECRET);
         // console.log('Payload:', payload);
 
-        req.user = payload.userId;
+        req.user = payload.user;
         // console.log('req.user:', req.user);
 
         next();

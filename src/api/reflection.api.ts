@@ -32,9 +32,7 @@ reflectionApi.post(
                 throw new SchemaError(validationResult.error);
             }
             const { success, low_point, take_away } = req.body;
-            const userIdUserType = req.user as unknown
-            const userId = userIdUserType as string
-            // console.log("UserId : ", userId)
+            const userId = req.user.userId
             
             try {
                 const createdReflection = await reflectionService.createReflection({
@@ -63,8 +61,7 @@ reflectionApi.get(
     "/getAllreflections",
     async (req: Request, res: Response) => {
         try {
-            const userIdUserType = req.user as unknown;
-            const userId = userIdUserType as string;
+            const userId = req.user.userId
 
             const reflections = await reflectionService.getAllReflections(userId);
 
@@ -97,8 +94,7 @@ reflectionApi.put(
         }
 
         const { success, low_point, take_away } = req.body;
-        const userIdUserType = req.user as unknown;
-        const userId = userIdUserType as string;
+        const userId = req.user.userId
 
         try {
             const reflection = await reflectionService.getReflectionById(parseInt(id), userId);
@@ -137,8 +133,7 @@ reflectionApi.delete(
             throw new BadRequestError("Invalid ID parameter");
         }
 
-        const userIdUserType = req.user as unknown;
-        const userId = userIdUserType as string;
+        const userId = req.user.userId
 
         try {
             const success = await reflectionService.deleteReflectionById(parseInt(id), userId);
