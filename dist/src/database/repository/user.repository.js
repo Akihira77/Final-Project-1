@@ -15,7 +15,10 @@ class UserRepository {
         if (!isMatched) {
             return "Email or password invalid!";
         }
-        const token = jwtSign({ userId: user.id, email: user.email });
+        const userAsPayload = {
+            user: { userId: user.id, email: user.email },
+        };
+        const token = jwtSign(userAsPayload);
         return { access_token: token };
     }
     async getByEmail(email) {

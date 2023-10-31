@@ -15,8 +15,7 @@ export const ReflectionDTO = z.object({
     take_away: z.string(),
     UserId: z.string(),
 });
-export const CreateReflectionRequestDTO = z
-    .object({
+export const CreateReflectionRequestDTO = z.object({
     success: z.string({
         required_error: "Success is required",
         invalid_type_error: "Success must be a string",
@@ -30,8 +29,7 @@ export const CreateReflectionRequestDTO = z
         invalid_type_error: "Take Away must be a string",
     }),
     UserId: z.string({}).optional(),
-})
-    .nonstrict();
+});
 export const CreateReflectionResponseDTO = z.object({
     id: z.number(),
     success: z.string(),

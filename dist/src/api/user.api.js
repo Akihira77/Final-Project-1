@@ -36,7 +36,7 @@ userApi.post("/auth/login", async (req, res) => {
     return;
 });
 userApi.get("/", async (req, res) => {
-    const users = userService.getAll();
+    const users = await userService.getAll();
     res.status(StatusCodes.Ok200).send({ users });
     return;
 });
