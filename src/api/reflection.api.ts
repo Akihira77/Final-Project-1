@@ -31,7 +31,11 @@ reflectionApi.post(
 		}
 		const { success, low_point, take_away } = req.body;
 		const userId = req.user.userId;
-		// console.log("UserId : ", userId)
+		// console.log("UserId : ", req.user);
+
+		if (!userId) {
+			throw new BadRequestError("Unauthorized");
+		}
 
 		try {
 			const createdReflection = await reflectionService.createReflection({
@@ -42,10 +46,7 @@ reflectionApi.post(
 			});
 
 			res.status(StatusCodes.Created201).send({
-				success,
-				low_point,
-				take_away,
-				userId,
+				...createdReflection,
 			});
 		} catch (error) {
 			console.error(error);

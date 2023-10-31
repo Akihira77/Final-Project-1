@@ -9,5 +9,5 @@ export type AuthPayloadType = {
 };
 
 export function jwtSign(payload: AuthPayloadType): string {
-	return jwt.sign({ user: payload }, JWT_SECRET!);
+	return jwt.sign({ ...payload }, JWT_SECRET!);
 }

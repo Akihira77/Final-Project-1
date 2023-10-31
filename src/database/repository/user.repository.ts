@@ -20,11 +20,14 @@ class UserRepository {
 		const hashedPassword = await hashPassword(password);
 
 		const { rows: users } = await db.query<RegisterResponseDTOType>(
-			`INSERT INTO "Users" VALUES ($1, $2, $3)`,
+			`INSERT INTO "Users" VALUES ($1, $2, $3) RETURNING "id", "email"`,
 			[userId, email, hashedPassword]
 		);
 
-		const user = users[0]!;
+		const user: RegisterResponseDTOType = {
+			id: users[0]!.id,
+			email: users[0]!.email,
+		};
 
 		return user;
 	}
