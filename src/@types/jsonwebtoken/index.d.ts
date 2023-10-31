@@ -1,12 +1,12 @@
 type UserPayloadType = {
-    userId: string;
-    email: string;
+	userId: string;
+	email: string;
 };
 
 declare module "jsonwebtoken" {
-    export interface JwtPayload {
-        user: UserPayloadType;
-    }
+	interface JwtPayload {
+		user: UserPayloadType;
+	}
 }
 
 export {};

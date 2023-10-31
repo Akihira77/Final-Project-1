@@ -1,42 +1,80 @@
-import {
-    RegisterRequestDTO,
-    RegisterResponseDTO,
-    UserDTO,
-} from "./../models/user.model";
-import { UserModel } from "../models/user.model.js";
 import * as db from "../index.js";
 import { v4 as uuidv4 } from "uuid";
+import { hashPassword, verifyPassword } from "../../utils/bcrypt.js";
+import { AuthPayloadType, jwtSign } from "../../utils/jwt.js";
+import {
+	LoginRequestDTOType,
+	LoginResponseDTOType,
+	RegisterRequestDTOType,
+	RegisterResponseDTOType,
+	UserDTOType,
+	UserModelType,
+} from "../models/user.model.js";
 
 class UserRepository {
-    async register({
-        email,
-        password,
-    }: RegisterRequestDTO): Promise<RegisterResponseDTO> {
-        const userId = uuidv4();
-        const { rows: users } = await db.query<RegisterResponseDTO>(
-            `INSERT INTO "Users" VALUES ($1, $2, $3)`,
-            [userId, email, password]
-        );
+	async register({
+		email,
+		password,
+	}: RegisterRequestDTOType): Promise<RegisterResponseDTOType> {
+		const userId = uuidv4();
+		const hashedPassword = await hashPassword(password);
 
-        const user = users[0]!;
+		const { rows: users } = await db.query<RegisterResponseDTOType>(
+			`INSERT INTO "Users" VALUES ($1, $2, $3) RETURNING "id", "email"`,
+			[userId, email, hashedPassword]
+		);
 
-        return user;
-    }
+		const user: RegisterResponseDTOType = {
+			id: users[0]!.id,
+			email: users[0]!.email,
+		};
 
-    async delete(id: string): Promise<void> {
-        await db.query<RegisterResponseDTO>(
-            `DELETE FROM "Users" WHERE "id" = ($1)`,
-            [id]
-        );
-    }
+		return user;
+	}
 
-    async getAll(): Promise<UserDTO[]> {
-        const { rows: users } = await db.query<UserDTO>(
-            `SELECT "id", "email" FROM "Users"`
-        );
+	async login({
+		user,
+		passwordRequest,
+	}: LoginRequestDTOType): Promise<LoginResponseDTOType> {
+		const isMatched = await verifyPassword(passwordRequest, user.password);
 
-        return users;
-    }
+		if (!isMatched) {
+			return "Email or password invalid!";
+		}
+
+		const userAsPayload: AuthPayloadType = {
+			user: { userId: user.id, email: user.email },
+		};
+
+		const token = jwtSign(userAsPayload);
+
+		return { access_token: token };
+	}
+
+	async getByEmail(email: string): Promise<UserModelType | undefined> {
+		const { rows: users } = await db.query<UserModelType>(
+			`SELECT "id", "email", "password" FROM "Users" WHERE "email" = $1`,
+			[email]
+		);
+
+		const user = users[0];
+		return user;
+	}
+
+	async delete(id: string): Promise<void> {
+		await db.query<RegisterResponseDTOType>(
+			`DELETE FROM "Users" WHERE "id" = ($1)`,
+			[id]
+		);
+	}
+
+	async getAll(): Promise<UserDTOType[]> {
+		const { rows: users } = await db.query<UserDTOType>(
+			`SELECT "id", "email" FROM "Users"`
+		);
+
+		return users;
+	}
 }
 
 export default UserRepository;

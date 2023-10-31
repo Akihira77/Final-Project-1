@@ -1,12 +1,14 @@
 import { Request } from "express";
 
 type UserType = {
-    userId: string;
-    email: string;
+	userId: string;
+	email: string;
 };
 
-declare module "express" {
-    export interface Request extends Request {
-        user: UserType;
-    }
+declare global {
+	namespace Express {
+		export interface Request extends Request {
+			user: UserType;
+		}
+	}
 }
